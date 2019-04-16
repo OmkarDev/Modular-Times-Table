@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 public abstract class Window {
 	private JFrame frame;
 	private boolean running = true;
-	protected int fps = 60;
+	protected int fps = 30;
 	protected int width = 640;
 	protected int height = 480;
 	protected Graphics2D g;
@@ -58,7 +58,6 @@ public abstract class Window {
 			return;
 		}
 		g = ((Graphics2D) bs.getDrawGraphics());
-		background(Color.white);
 		draw();
 		Toolkit.getDefaultToolkit().sync();
 		g.dispose();

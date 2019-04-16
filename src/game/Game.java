@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -8,15 +9,15 @@ import java.text.DecimalFormat;
 import window.Window;
 
 public class Game extends Window implements KeyListener {
-
-	static int size = 700;
-	float radius;
+	static int size = 600;
+	float radius = 250;
 	int mod = 200;
 	float times = 1;
+	boolean auto, manual;
+	float speed = 0.05f;
 
 	public Game(int width, int height, String title) {
 		super(width, height, title);
-		radius = 300;
 	}
 
 	Vector2f getPosition(float v) {
@@ -26,51 +27,60 @@ public class Game extends Window implements KeyListener {
 	}
 
 	public void draw() {
-		times += 0.01;
-		background(Color.BLACK);
-		g.setColor(new Color(255, 255, 255));
+		if (auto) {
+			times += speed;
+		}
+		background(Color.black);
+		g.setStroke(new BasicStroke(1.2f));
+		g.setColor(Color.white);
 		g.drawString("(" + new DecimalFormat("#.00").format(times) + "t) mod " + mod, 50, 50);
 		g.translate(size / 2, size / 2 + 10);
-		for (float i = 0; i < 360; i += 360 / mod) {
-			g.drawLine((int) getPosition(i).x, (int) getPosition(i).y, (int) getPosition((i * times)).x,
-					(int) getPosition((i * times)).y);
+		for (float i = 0; i < mod; i += 1) {
+			Vector2f v1 = getPosition(i * 360 / mod);
+			Vector2f v2 = getPosition(i * times * 360 / mod);
+			g.drawLine((int) v1.x, (int) v1.y, (int) v2.x, (int) v2.y);
 		}
 	}
 
 	public static void main(String[] args) {
 		Game game = new Game(size, size + 10, "Times Tables");
-		game.fps = 40;
+		if (args.length > 0) {
+			if (args[0].equals("auto")) {
+				game.auto = true;
+			}
+		} else {
+			game.manual = true;
+		}
 		game.canvas.addKeyListener(game);
 		game.display();
 	}
-
-	float speed = 0.01f;
 
 	public void keyTyped(KeyEvent e) {
 
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			if (times > 1) {
-				times -= speed;
+		if (manual) {
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				if (times > 1 + speed) {
+					times -= speed;
+				}
 			}
-		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			times += speed;
-		}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				times += speed;
+			}
 
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			mod += 1;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			if (mod > 2) {
-				mod -= 1;
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				mod += 1;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				if (mod > 2) {
+					mod -= 1;
+				}
 			}
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-
 	}
 }
